@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="container">
-        <p>&copy; 2026 ATS Resume Analyzer. Built with React, Node.js, MongoDB & Gemini AI</p>
+        <p>&copy; 2026 JobFit Analyzer. Built with React, Node.js, MongoDB & Gemini AI</p>
         <p style={{ marginTop: '10px', fontSize: '14px', opacity: '0.8' }}>
           Empowering job seekers with AI-powered resume insights
         </p>

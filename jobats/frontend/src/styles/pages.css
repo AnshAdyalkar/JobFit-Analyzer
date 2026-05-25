@@ -41,7 +41,7 @@
 .feature-card {
   text-align: center;
   padding: 30px;
-  background: var(--white);
+  background: var(--surface);
   border-radius: 12px;
   box-shadow: var(--shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;

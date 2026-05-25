@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { uploadResume, analyzeResume } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { uploadResume, analyzeResume, getProfile } from '../services/api';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const ResumeUpload = ({ onUploadSuccess }) => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,33 @@ const ResumeUpload = ({ onUploadSuccess }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserEmail = async () => {
+      try {
+        const profile = await getProfile();
+        if (profile?.data?.email) {
+          setEmail(profile.data.email);
+        }
+      } catch (err) {
+        console.error('Error fetching profile for email:', err);
+      }
+    };
+    fetchUserEmail();
+  }, []);
+
+  const allowedTypes = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ];
+
+  const isValidFile = (file) => {
+    if (!file) return false;
+    return allowedTypes.includes(file.type);
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -23,21 +51,21 @@ const ResumeUpload = ({ onUploadSuccess }) => {
     e.preventDefault();
     setDragOver(false);
     const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.type === 'application/pdf') {
+    if (isValidFile(droppedFile)) {
       setFile(droppedFile);
       setError('');
     } else {
-      setError('Please drop a PDF file');
+      setError('Invalid file type. Allowed: PDF, JPG, PNG, DOCX');
     }
   };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.type === 'application/pdf') {
+    if (isValidFile(selectedFile)) {
       setFile(selectedFile);
       setError('');
     } else {
-      setError('Please select a PDF file');
+      setError('Invalid file type. Allowed: PDF, JPG, PNG, DOCX');
     }
   };
 
@@ -65,7 +93,7 @@ const ResumeUpload = ({ onUploadSuccess }) => {
       formData.append('email', email);
       formData.append('resume', file);
 
-      const uploadResponse = await uploadResume(formData);
+      await uploadResume(formData);
       setSuccess('Resume uploaded successfully! Analyzing...');
       toast.success('Resume uploaded successfully');
 
@@ -89,10 +117,29 @@ const ResumeUpload = ({ onUploadSuccess }) => {
   return (
     <div className="upload-container">
       <div className="card">
-        <h2 style={{ marginBottom: '30px', textAlign: 'center' }}>Upload Your Resume</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ margin: 0 }}>Upload Your Resume</h2>
+          <button 
+            onClick={() => navigate('/history')} 
+            className="btn btn-secondary" 
+            style={{ padding: '8px 15px', fontSize: '14px' }}
+          >
+            📜 View History
+          </button>
+        </div>
 
         {error && <div className="alert alert-error">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
+        {success && (
+          <div className="alert alert-success">
+            {success}
+            <button 
+              onClick={() => navigate('/history')} 
+              style={{ background: 'none', border: 'none', color: 'inherit', textDecoration: 'underline', cursor: 'pointer', marginLeft: '10px', fontWeight: 'bold' }}
+            >
+              Check History
+            </button>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -106,9 +153,10 @@ const ResumeUpload = ({ onUploadSuccess }) => {
               placeholder="your.email@example.com"
               required
               disabled={loading}
+              readOnly={!!email} // Prevent changing email if it was auto-filled from profile
             />
             <small style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '5px', display: 'block' }}>
-              We'll use this to store your analysis results
+              Your resume will be saved under this email for your history.
             </small>
           </div>
 
@@ -123,11 +171,11 @@ const ResumeUpload = ({ onUploadSuccess }) => {
             <div className="drop-zone-icon">📄</div>
             <h3>Drag & Drop your resume here</h3>
             <p style={{ color: 'var(--text-secondary)', margin: '10px 0' }}>or click to browse</p>
-            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>PDF files only (Max 5MB)</p>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Allowed: PDF, DOCX, JPG, PNG (Max 10MB)</p>
             <input
               type="file"
               id="fileInput"
-              accept=".pdf"
+              accept=".pdf,.docx,.jpg,.jpeg,.png,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png"
               onChange={handleFileChange}
               disabled={loading}
             />
@@ -148,15 +196,6 @@ const ResumeUpload = ({ onUploadSuccess }) => {
             {loading ? '🔄 Analyzing Resume...' : '🚀 Upload & Analyze Resume'}
           </button>
         </form>
-
-        <p style={{
-          marginTop: '20px',
-          textAlign: 'center',
-          color: 'var(--text-secondary)',
-          fontSize: '13px'
-        }}>
-          Your data is secure and will only be used for resume analysis
-        </p>
       </div>
     </div>
   );

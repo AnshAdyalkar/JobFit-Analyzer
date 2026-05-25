@@ -161,7 +161,7 @@ const CareerPlan = ({ email, plan, onPlanGenerated }) => {
           <div style={{
             marginTop: '20px',
             padding: '15px',
-            backgroundColor: '#eff6ff',
+            backgroundColor: 'var(--info-bg)',
             borderRadius: '8px',
             fontSize: '14px',
             color: 'var(--text-primary)'
@@ -182,7 +182,7 @@ const CareerPlan = ({ email, plan, onPlanGenerated }) => {
           <div style={{
             marginBottom: '20px',
             padding: '15px',
-            backgroundColor: '#f0fdf4',
+            backgroundColor: 'var(--success-bg)',
             borderRadius: '8px',
             borderLeft: '4px solid var(--success-color)'
           }}>
@@ -193,7 +193,7 @@ const CareerPlan = ({ email, plan, onPlanGenerated }) => {
           </div>
 
           <div style={{
-            backgroundColor: 'var(--white)',
+            backgroundColor: 'var(--surface)',
             padding: '30px',
             borderRadius: '8px',
             border: '1px solid var(--border-color)'

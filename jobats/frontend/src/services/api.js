@@ -59,6 +59,27 @@ export const uploadResume = async (formData) => {
   return res.data;
 };
 
+export const getResumeHistory = async (email) => {
+  const res = await api.get(`/resume/history/${email}`);
+  return res.data;
+};
+
+export const deleteResume = async (id) => {
+  const res = await api.delete(`/resume/${id}`);
+  return res.data;
+};
+
+export const downloadResume = (id) => {
+  // Use window.open or a link for download since it's a file stream
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  window.open(`${API_URL}/resume/download/${id}?token=${token}`, '_blank');
+};
+
+export const getResumePreviewUrl = (id) => {
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  return `${API_URL}/resume/preview/${id}?token=${token}`;
+};
+
 export const analyzeResume = async (email) => {
   const res = await api.post("/analysis/analyze", { email });
   return res.data;

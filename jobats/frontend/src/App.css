@@ -46,7 +46,8 @@
 }
 
 .auth-card {
-  background: #fff;
+  background: var(--surface);
+  color: var(--text-primary);
   padding: 40px;
   width: 380px;
   border-radius: 12px;
@@ -68,7 +69,9 @@
 .input-group input {
   padding: 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--text-primary);
   margin-top: 5px;
 }
 

@@ -1,4 +1,4 @@
-# ATS Resume Analyzer - AI Powered Career Assistant
+# JobFit Analyzer - AI Powered Career Assistant
 
 An advanced MERN stack application that analyzes resumes using AI (Gemini), provides ATS scores, identifies skill gaps, and suggests personalized career roadmaps.
 

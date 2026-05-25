@@ -60,7 +60,7 @@ const SkillGapAnalysis = ({ targetJob }) => {
           {hasAllSkills ? (
             <div style={{
               padding: '20px',
-              backgroundColor: '#f0fdf4',
+              backgroundColor: 'var(--success-bg)',
               borderRadius: '8px',
               color: 'var(--success-color)',
               width: '100%'
@@ -84,7 +84,7 @@ const SkillGapAnalysis = ({ targetJob }) => {
         <div style={{
           marginTop: '30px',
           padding: '20px',
-          backgroundColor: '#fffbeb',
+          backgroundColor: 'var(--warning-bg)',
           borderRadius: '8px',
           borderLeft: '4px solid var(--warning-color)'
         }}>
@@ -104,7 +104,7 @@ const SkillGapAnalysis = ({ targetJob }) => {
       <div style={{
         marginTop: '20px',
         padding: '20px',
-        backgroundColor: '#eff6ff',
+        backgroundColor: 'var(--info-bg)',
         borderRadius: '8px',
         borderLeft: '4px solid var(--primary-color)'
       }}>

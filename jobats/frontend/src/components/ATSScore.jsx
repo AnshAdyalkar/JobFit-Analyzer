@@ -98,7 +98,7 @@ const ATSScore = ({ score, breakdown, comparison, suggestions = [] }) => {
         <div style={{
           marginTop: '20px',
           padding: '15px',
-          backgroundColor: '#f0fdf4',
+          backgroundColor: 'var(--success-bg)',
           borderRadius: '8px',
           borderLeft: '4px solid var(--success-color)'
         }}>
@@ -110,7 +110,7 @@ const ATSScore = ({ score, breakdown, comparison, suggestions = [] }) => {
         <div style={{
           marginTop: '20px',
           padding: '15px',
-          backgroundColor: '#fffbeb',
+          backgroundColor: 'var(--warning-bg)',
           borderRadius: '8px',
           borderLeft: '4px solid var(--warning-color)'
         }}>
@@ -126,7 +126,7 @@ const ATSScore = ({ score, breakdown, comparison, suggestions = [] }) => {
       <div style={{
         marginTop: '40px',
         padding: '20px',
-        backgroundColor: '#eff6ff',
+        backgroundColor: 'var(--info-bg)',
         borderRadius: '8px',
         borderLeft: '4px solid var(--primary-color)'
       }}>

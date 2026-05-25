@@ -1,13 +1,32 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { getAnalysisHistory, getAdminStats, getProfile } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [email, setEmail] = useState(() => localStorage.getItem('lastEmail') || '');
+  const [email, setEmail] = useState('');
   const [history, setHistory] = useState([]);
   const [stats, setStats] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchInitialProfile = async () => {
+      try {
+        const p = await getProfile();
+        if (p?.data?.email) {
+          setEmail(p.data.email);
+          setProfile(p.data);
+        }
+      } catch (e) {
+        console.error('Error fetching profile:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInitialProfile();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,14 +34,12 @@ const Dashboard = () => {
       setLoading(true);
       setError('');
       try {
-        const [h, s, p] = await Promise.all([
+        const [h, s] = await Promise.all([
           getAnalysisHistory(email),
-          getAdminStats(),
-          getProfile()
+          getAdminStats()
         ]);
         setHistory(h.data || []);
         setStats(s.data || null);
-        setProfile(p.data || null);
       } catch (e) {
         setError(e.response?.data?.error || 'Failed to fetch dashboard data');
       } finally {
@@ -34,10 +51,8 @@ const Dashboard = () => {
 
   const scores = useMemo(() => history.map(r => r.atsScore).reverse(), [history]);
 
-  const maxScore = 100;
-
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container page-container">
       <div className="container">
         <div className="dashboard-header">
           <h2>Profile Dashboard</h2>
@@ -51,20 +66,24 @@ const Dashboard = () => {
               id="dashboardEmail"
               type="email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                localStorage.setItem('lastEmail', e.target.value);
-              }}
-              placeholder="your.email@example.com"
+              readOnly
+              style={{ background: 'var(--light)', cursor: 'not-allowed' }}
+              placeholder="Loading profile email..."
             />
+            <small style={{ color: 'var(--text-secondary)', marginTop: '5px', display: 'block' }}>
+              Dashboard data is automatically fetched for your account email.
+            </small>
           </div>
-          {loading && <div className="loading-spinner" />}
+          {loading && <div className="loading-spinner" style={{ margin: '10px auto' }} />}
           {error && <div className="alert alert-error">{error}</div>}
         </div>
 
         <div className="dashboard-grid">
           <div className="card">
-            <h3 style={{ marginBottom: '10px' }}>Profile Completion</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h3 style={{ margin: 0 }}>Profile Completion</h3>
+              <button onClick={() => navigate('/profile')} className="btn btn-secondary btn-sm">Edit</button>
+            </div>
             {profile ? (
               (() => {
                 const required = ['name', 'email', 'phone', 'city', 'state', 'country'];
@@ -80,7 +99,6 @@ const Dashboard = () => {
                       <div style={{ width: `${pct}%`, height: '10px', background: 'var(--primary-color)' }} />
                     </div>
                     <p style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>{pct}% complete</p>
-                    <a href="/profile" className="btn btn-secondary" style={{ marginTop: '8px' }}>Update Profile</a>
                   </div>
                 );
               })()
@@ -90,69 +108,93 @@ const Dashboard = () => {
           </div>
 
           <div className="card">
-            <h3 style={{ marginBottom: '10px' }}>Resume Upload History</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+              <h3 style={{ margin: 0 }}>Resume Upload History</h3>
+              <button onClick={() => navigate('/history')} className="btn btn-secondary btn-sm">Manage All</button>
+            </div>
             {history.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)' }}>No history yet. Upload your resume to get started.</p>
+              <p style={{ color: 'var(--text-secondary)' }}>No analysis history yet. Upload your resume to get started.</p>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--border-color)' }}>
-                    <th style={{ padding: '8px' }}>Date</th>
-                    <th style={{ padding: '8px' }}>ATS Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((run, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                      <td style={{ padding: '8px' }}>{new Date(run.createdAt).toLocaleString()}</td>
-                      <td style={{ padding: '8px' }}>{run.atsScore}</td>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--border-color)' }}>
+                      <th style={{ padding: '8px' }}>Date</th>
+                      <th style={{ padding: '8px' }}>Score</th>
+                      <th style={{ padding: '8px' }}>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-
-          <div className="card">
-            <h3 style={{ marginBottom: '10px' }}>Progress Improvement Chart</h3>
-            {scores.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)' }}>No data yet.</p>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'end', gap: '8px', height: '160px', padding: '10px', background: 'var(--light)', borderRadius: '8px' }}>
-                {scores.map((s, idx) => (
-                  <div key={idx} style={{ width: '24px', height: `${(s / maxScore) * 140}px`, background: 'var(--primary-color)', borderRadius: '4px' }} title={`Score: ${s}`} />
-                ))}
+                  </thead>
+                  <tbody>
+                    {history.slice(0, 5).map((item, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <td style={{ padding: '8px' }}>{new Date(item.analyzedAt || item.createdAt).toLocaleDateString()}</td>
+                        <td style={{ padding: '8px' }}>
+                          <span style={{ 
+                            padding: '2px 8px', 
+                            borderRadius: '12px', 
+                            background: item.atsScore >= 70 ? 'var(--success-bg)' : 'var(--warning-bg)',
+                            color: item.atsScore >= 70 ? 'var(--success-color)' : 'var(--warning-color)',
+                            fontSize: '13px',
+                            fontWeight: 'bold'
+                          }}>
+                            {item.atsScore}
+                          </span>
+                        </td>
+                        <td style={{ padding: '8px' }}>
+                          <button 
+                            onClick={() => navigate('/results', { state: { email, analysisData: item } })}
+                            className="btn-text"
+                            style={{ color: 'var(--primary-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {history.length > 5 && (
+                  <p style={{ textAlign: 'center', marginTop: '10px' }}>
+                    <button onClick={() => navigate('/history')} className="btn-text" style={{ color: 'var(--primary-color)', cursor: 'pointer', background: 'none', border: 'none' }}>
+                      Show more history...
+                    </button>
+                  </p>
+                )}
               </div>
-            )}
-          </div>
-
-          <div className="card">
-            <h3 style={{ marginBottom: '10px' }}>App Stats</h3>
-            {stats ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
-                <div className="score-item">
-                  <h4>Total Users</h4>
-                  <div className="value">{stats.totalUsers}</div>
-                </div>
-                <div className="score-item">
-                  <h4>Resumes Uploaded</h4>
-                  <div className="value">{stats.resumesUploaded}</div>
-                </div>
-                <div className="score-item">
-                  <h4>Latest Analyses</h4>
-                  <div className="value">{stats.analysesLatest}</div>
-                </div>
-                <div className="score-item">
-                  <h4>History Runs</h4>
-                  <div className="value">{stats.analysesHistoryRuns}</div>
-                </div>
-              </div>
-            ) : (
-              <p style={{ color: 'var(--text-secondary)' }}>No stats available.</p>
             )}
           </div>
         </div>
+
+        {stats && (
+          <div className="card" style={{ marginTop: '20px' }}>
+            <h3 style={{ marginBottom: '15px' }}>Platform Statistics</h3>
+            <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
+              <div className="stat-item" style={{ textAlign: 'center', padding: '15px', background: 'var(--light)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--primary-color)' }}>{stats.totalUsers || 0}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Total Users</div>
+              </div>
+              <div className="stat-item" style={{ textAlign: 'center', padding: '15px', background: 'var(--light)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--success-color)' }}>{stats.totalResumes || 0}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Resumes Analyzed</div>
+              </div>
+              <div className="stat-item" style={{ textAlign: 'center', padding: '15px', background: 'var(--light)', borderRadius: '8px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--secondary-color)' }}>{stats.totalAnalyses || 0}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Analyses Generated</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+      
+      <style jsx>{`
+        .btn-sm {
+          padding: 5px 12px;
+          font-size: 13px;
+        }
+        .btn-text:hover {
+          text-decoration: underline;
+        }
+      `}</style>
     </div>
   );
 };

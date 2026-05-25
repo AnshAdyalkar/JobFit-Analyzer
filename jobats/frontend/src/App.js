@@ -7,6 +7,7 @@ import Results from './pages/Results';
 import Dashboard from './pages/Dashboard';
 import Auth from './pages/Auth.jsx';
 import Profile from './pages/Profile';
+import ResumeHistory from './pages/ResumeHistory';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,6 +26,7 @@ function App() {
             <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute><ResumeHistory /></ProtectedRoute>} />
             <Route path="/auth" element={<Auth />} />
           </Routes>
         </main>

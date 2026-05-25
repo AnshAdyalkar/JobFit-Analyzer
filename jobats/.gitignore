@@ -38,4 +38,4 @@ yarn-error.log*
 
 
 # Ignore the image.png file in the public folder
-./public/image.png
+./public/Logo.png

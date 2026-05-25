@@ -160,7 +160,7 @@ const JobSuggestions = ({ jobs, email }) => {
       <div style={{
         marginTop: '30px',
         padding: '20px',
-        backgroundColor: '#f0fdf4',
+        backgroundColor: 'var(--success-bg)',
         borderRadius: '8px',
         borderLeft: '4px solid var(--success-color)'
       }}>
