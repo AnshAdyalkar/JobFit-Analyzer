@@ -70,9 +70,20 @@
   padding: 10px;
   border-radius: 6px;
   border: 1px solid var(--border-color);
-  background: var(--surface);
+  background: var(--input-bg);
   color: var(--text-primary);
   margin-top: 5px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: var(--primary-color);
+}
+
+.input-group input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .remember-section {
@@ -85,24 +96,26 @@
 .auth-btn {
   width: 100%;
   padding: 10px;
-  background: #667eea;
+  background: var(--primary-color);
   border: none;
   color: white;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .auth-btn:hover {
-  background: #5a67d8;
+  background: var(--primary-dark);
 }
 
 .bottom-text {
   text-align: center;
   margin-top: 15px;
+  color: var(--text-primary);
 }
 
 .link-text {
-  color: #667eea;
+  color: var(--primary-color);
   cursor: pointer;
   font-weight: 500;
 }

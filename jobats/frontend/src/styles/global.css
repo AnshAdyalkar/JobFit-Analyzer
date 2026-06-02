@@ -19,6 +19,7 @@
   --border-color: #e5e7eb;
   --card-bg: rgba(255, 255, 255, 0.75);
   --surface: #ffffff;
+  --input-bg: #ffffff;
   --info-bg: #eff6ff;
   --success-bg: #f0fdf4;
   --warning-bg: #fffbeb;
@@ -126,9 +127,10 @@ body {
   --white: #ffffff;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --border-color: #1e293b;
-  --card-bg: rgba(15, 23, 42, 0.8);
+  --border-color: #334155;
+  --card-bg: rgba(15, 23, 42, 0.9);
   --surface: #1e293b;
+  --input-bg: #0f172a;
   --info-bg: rgba(30, 58, 138, 0.3);
   --success-bg: rgba(6, 78, 59, 0.3);
   --warning-bg: rgba(120, 53, 15, 0.3);

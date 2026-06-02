@@ -39,3 +39,24 @@ yarn-error.log*
 
 # Ignore the image.png file in the public folder
 ./public/Logo.png
+
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment
+.env
+
+# MongoDB data
+backend/.mongo-data/
+*.wt
+WiredTiger*
+mongod.lock
+
+# Uploads
+backend/uploads/
+
+# Build
+dist/
+build/
