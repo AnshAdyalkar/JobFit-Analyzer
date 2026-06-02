@@ -1,0 +1,46 @@
+name: JobFit Analyzer
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Backend Dependencies
+        run: |
+          cd jobats/backend
+          npm install
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd jobats/frontend
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd jobats/frontend
+          npm run build
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deployment Triggered
+        run: echo "Build Successful. Ready for Deployment 🚀"
